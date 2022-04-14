@@ -11,7 +11,7 @@ let macroBetween (exprList : Expression list) : Expression =
         let checkLowerBorder = List [ Symbol "ge"; value ; lower ]
         let checkUpperBorder = List [ Symbol "le"; value; upper ]
         List [ Symbol "and" ; checkLowerBorder ; checkUpperBorder ]
-    | _ -> raise <| InvalidArgsException
+    | _ -> raise <| InvalidLispExpressionException $"between expects exactly two argument"
 
 let macroInside (exprList : Expression list) : Expression =
     match exprList with
@@ -19,4 +19,4 @@ let macroInside (exprList : Expression list) : Expression =
         let checkLowerBorder = List [ Symbol "gt"; value ; lower ]
         let checkUpperBorder = List [ Symbol "lt"; value; upper ]
         List [ Symbol "and" ; checkLowerBorder ; checkUpperBorder ]
-    | _ -> raise <| InvalidArgsException
+    | _ -> raise <| InvalidLispExpressionException $"inside expects exactly two argument"

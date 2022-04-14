@@ -7,52 +7,48 @@ open StandardLib.BinaryOperators
 open StandardLib.Functions
 open StandardLib.Macros
 
-// helpers
-let liftExpression (expr : Expression) = [ expr ]
+// function catalogue
+let unaryFunctions : Map<string, Expression -> Expression> = 
+    Map.ofArray
+        [|
+            // quote operator
+            "quote", unaryQuote
 
-let liftUnaryOp (opName : string) (op : UnaryOperator) (runtime : IRuntime) (args : Expression list) =
-    match args with
-    | [ arg ] -> op runtime arg
-    | _ -> raise <| WrongNumberOfArgsException (opName, 1)
+            // boolean functions
+            "not", unaryNot
 
-let liftBinaryOp (opName : string) (op : BinaryOperator) (runtime : IRuntime) (args : Expression list) =
-    match args with
-    | [ a; b ] -> op runtime (a, b)
-    | _ -> raise <| WrongNumberOfArgsException (opName, 2)
+            // datetime functions
+            "year", unaryYear
+            "month", unaryYear
+            "day", unaryYear
+        |]
 
-// initialize library
-let init : Map<string, Function> =
-    seq {
-        // quote operator
-        "quote", liftUnaryOp "quote" unaryQuote
+let binaryFunctions : Map<string, Expression * Expression -> Expression> =
+    Map.ofArray
+        [|
+            // comparisons
+            "eq", stdEqual
+            "lt", stdLower
+            "le", stdLowerEqual
+            "gt", stdGreater
+            "ge", stdGreaterEqual
+        |]
 
-        // type constructors
-        "#date", stdDate
-        "#time", stdTime
-        "#datetime", stdDateTime
+let ordinaryFunctions : Map<string, Function> =
+    Map.ofArray
+        [|
+            // type constructors
+            "#date", stdDate
+            "#time", stdTime
+            "#datetime", stdDateTime
 
-        // datetime functions
-        "year", liftUnaryOp "year" unaryYear
-        "month", liftUnaryOp "month" unaryYear
-        "day", liftUnaryOp "day" unaryYear
+            // boolean functions
+            "and", stdAnd
+            "or", stdOr
+            "cond", stdCond
 
-        // boolean functions
-        "not", liftUnaryOp "not" unaryNot
-        "and", stdAnd
-        "or", stdOr
-
-        // comparisons
-        "eq", liftBinaryOp "eq" stdEqual
-        "lt", liftBinaryOp "lt" stdLower
-        "le", liftBinaryOp "le" stdLowerEqual
-        "gt", liftBinaryOp "gt" stdGreater
-        "ge", liftBinaryOp "ge" stdGreaterEqual
-        "cond", stdCond
-    }
-    |> Map.ofSeq
-
-let registerMacros (runtime : IRuntime) : IRuntime =
-    runtime.RegisterMacro "neq" macroNotEqual
-    runtime.RegisterMacro "between" macroBetween
-    runtime.RegisterMacro "inside" macroInside
-    runtime
+            // macros
+            "neq", macroNotEqual
+            "between", macroBetween
+            "inside", macroInside
+        |]

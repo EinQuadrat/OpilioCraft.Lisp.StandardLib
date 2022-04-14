@@ -4,28 +4,28 @@ open OpilioCraft.Lisp
 open SpecialSymbols
 
 // unary operators
-let unaryQuote _ arg : Expression = arg
+let unaryQuote arg : Expression = arg
 
-let unaryNot _ = function
+let unaryNot = function
     | LispBoolean boolValue -> not boolValue |> LispBoolean
     | List [] -> T
     | _ -> NIL
 
 // datetime functions
-let unaryYear _ =
+let unaryYear =
     function
     | LispDate dateValue -> dateValue.Year |> LispNumeral
     | LispDateTime datetimeValue -> datetimeValue.Year |> LispNumeral
-    | _ -> raise <| InvalidArgsException
+    | _ -> raise <| InvalidLispExpressionException $"Function year expects exactly one argument of type Date or DateTime"
 
-let unaryMonth _ =
+let unaryMonth =
     function
     | LispDate dateValue -> dateValue.Month |> LispNumeral
     | LispDateTime datetimeValue -> datetimeValue.Month |> LispNumeral
-    | _ -> raise <| InvalidArgsException
+    | _ -> raise <| InvalidLispExpressionException $"Function month expects exactly one argument of type Date or DateTime"
 
-let unaryDay _ =
+let unaryDay =
     function
     | LispDate dateValue -> dateValue.Day |> LispNumeral
     | LispDateTime datetimeValue -> datetimeValue.Day |> LispNumeral
-    | _ -> raise <| InvalidArgsException
+    | _ -> raise <| InvalidLispExpressionException $"Function day expects exactly one argument of type Date or DateTime"

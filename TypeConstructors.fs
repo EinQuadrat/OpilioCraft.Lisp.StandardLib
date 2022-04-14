@@ -4,23 +4,23 @@ open OpilioCraft.FSharp.Prelude
 open OpilioCraft.Lisp
 
 // type constructors
-let stdDate _ exprList =
+let stdDate exprList =
     match exprList with
     | [ Atom (FlexibleValue.Numeral year); Atom (FlexibleValue.Numeral month); Atom (FlexibleValue.Numeral day) ] -> System.DateOnly(year, month, day)
     | [ Atom (FlexibleValue.Numeral year); Atom (FlexibleValue.Numeral month) ] -> System.DateOnly(year, month, 1)
     | [ Atom (FlexibleValue.Numeral year) ] -> System.DateOnly(year, 1, 1)
-    | _ -> raise <| InvalidArgsException
+    | _ -> raise <| InvalidLispExpressionException $"invalid use of type constructor #date"
     |> LispDate
 
-let stdTime _ exprList =
+let stdTime exprList =
     match exprList with
     | [ Atom (FlexibleValue.Numeral hour); Atom (FlexibleValue.Numeral minute); Atom (FlexibleValue.Numeral second) ] -> new System.TimeOnly(hour, minute, second)
     | [ Atom (FlexibleValue.Numeral hour); Atom (FlexibleValue.Numeral minute) ] -> System.TimeOnly(hour, minute)
     | [ Atom (FlexibleValue.Numeral hour) ] -> System.TimeOnly(hour)
-    | _ -> raise <| InvalidArgsException
+    | _ -> raise <| InvalidLispExpressionException $"invalid use of type constructor #time"
     |> LispTime
 
-let stdDateTime _ exprList =
+let stdDateTime exprList =
     match exprList with
     | [
         Atom (FlexibleValue.Numeral year)
@@ -30,5 +30,5 @@ let stdDateTime _ exprList =
         Atom (FlexibleValue.Numeral minute)
         Atom (FlexibleValue.Numeral second)
       ] -> System.DateTime(year, month, day, hour, minute, second)
-    | _ -> raise <| InvalidArgsException
+    | _ -> raise <| InvalidLispExpressionException $"invalid use of type constructor #datetime"
     |> LispDateTime
