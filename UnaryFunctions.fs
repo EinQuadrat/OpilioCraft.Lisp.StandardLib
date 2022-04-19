@@ -1,4 +1,4 @@
-﻿module internal OpilioCraft.Lisp.StandardLib.UnaryOperators
+﻿module internal OpilioCraft.Lisp.StandardLib.UnaryFunctions
 
 open OpilioCraft.Lisp
 open SpecialSymbols

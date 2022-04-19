@@ -4,7 +4,7 @@ open OpilioCraft.FSharp.Prelude
 open OpilioCraft.Lisp
 
 // type constructors
-let stdDate exprList =
+let ctrDate exprList =
     match exprList with
     | [ Atom (FlexibleValue.Numeral year); Atom (FlexibleValue.Numeral month); Atom (FlexibleValue.Numeral day) ] -> System.DateOnly(year, month, day)
     | [ Atom (FlexibleValue.Numeral year); Atom (FlexibleValue.Numeral month) ] -> System.DateOnly(year, month, 1)
@@ -12,7 +12,7 @@ let stdDate exprList =
     | _ -> raise <| InvalidLispExpressionException $"invalid use of type constructor #date"
     |> LispDate
 
-let stdTime exprList =
+let ctrTime exprList =
     match exprList with
     | [ Atom (FlexibleValue.Numeral hour); Atom (FlexibleValue.Numeral minute); Atom (FlexibleValue.Numeral second) ] -> new System.TimeOnly(hour, minute, second)
     | [ Atom (FlexibleValue.Numeral hour); Atom (FlexibleValue.Numeral minute) ] -> System.TimeOnly(hour, minute)
@@ -20,7 +20,7 @@ let stdTime exprList =
     | _ -> raise <| InvalidLispExpressionException $"invalid use of type constructor #time"
     |> LispTime
 
-let stdDateTime exprList =
+let ctrDateTime exprList =
     match exprList with
     | [
         Atom (FlexibleValue.Numeral year)

@@ -2,8 +2,8 @@
 module OpilioCraft.Lisp.StandardLib
 
 open StandardLib.TypeConstructors
-open StandardLib.UnaryOperators
-open StandardLib.BinaryOperators
+open StandardLib.UnaryFunctions
+open StandardLib.BinaryFunctions
 open StandardLib.Functions
 open StandardLib.Macros
 
@@ -26,26 +26,38 @@ let unaryFunctions : Map<string, Expression -> Expression> =
 let binaryFunctions : Map<string, Expression * Expression -> Expression> =
     Map.ofArray
         [|
-            // comparisons
-            "eq", stdEqual
-            "lt", stdLower
-            "le", stdLowerEqual
-            "gt", stdGreater
-            "ge", stdGreaterEqual
+            // arithmetic
+            "+", binaryAdd
+            "-", binarySubtract
+            "*", binaryMultiply
+            "/", binaryDivide
+
+            // comparison
+            "eq", binaryEqual
+            "lt", binaryLower
+            "le", binaryLowerEqual
+            "gt", binaryGreater
+            "ge", binaryGreaterEqual
+
+            // matching
+            "contains", binaryContains
+            "matches",  binaryMatchesRegex
         |]
 
 let ordinaryFunctions : Map<string, Function> =
     Map.ofArray
         [|
             // type constructors
-            "#date", stdDate
-            "#time", stdTime
-            "#datetime", stdDateTime
+            "#date", ctrDate
+            "#time", ctrTime
+            "#datetime", ctrDateTime
 
             // boolean functions
-            "and", stdAnd
-            "or", stdOr
-            "cond", stdCond
+            "and", funcAnd
+            "or", funcOr
+
+            // other functions
+            "cond", funcCond
 
             // macros
             "neq", macroNotEqual
