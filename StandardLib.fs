@@ -7,13 +7,12 @@ open StandardLib.BinaryFunctions
 open StandardLib.Functions
 open StandardLib.Macros
 
+open StandardLib.EvalHelper
+
 // function catalogue
-let unaryFunctions : Map<string, Expression -> Expression> = 
+let unaryFunctions : Map<string, Environment -> Expression -> Expression> = 
     Map.ofArray
         [|
-            // quote operator
-            "quote", unaryQuote
-
             // boolean functions
             "not", unaryNot
 
@@ -22,8 +21,9 @@ let unaryFunctions : Map<string, Expression -> Expression> =
             "month", unaryYear
             "day", unaryYear
         |]
+    |> Map.map (fun _ body -> (fun env -> Evaluator.evalExpression env >> body env)) // unary function always have to eval their argument
 
-let binaryFunctions : Map<string, Expression * Expression -> Expression> =
+let binaryFunctions : Map<string, Environment -> Expression * Expression -> Expression> =
     Map.ofArray
         [|
             // arithmetic
@@ -48,9 +48,9 @@ let ordinaryFunctions : Map<string, Function> =
     Map.ofArray
         [|
             // type constructors
-            "#date", ctrDate
-            "#time", ctrTime
-            "#datetime", ctrDateTime
+            "#date", fun env -> evalExpressionList env >> ctrDate env
+            "#time", fun env -> evalExpressionList env >> ctrTime env
+            "#datetime", fun env -> evalExpressionList env >> ctrDateTime env
 
             // boolean functions
             "and", funcAnd

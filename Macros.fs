@@ -2,10 +2,12 @@
 
 open OpilioCraft.Lisp
 
-let macroNotEqual (exprList : Expression list) : Expression =
+// NOTE: macros rewrite the provided LISP expression list, they do not evaluate anything
+
+let macroNotEqual _ (exprList : Expression list) : Expression =
     List [ Symbol "not" ; List ( Symbol "eq" :: exprList ) ]
 
-let macroBetween (exprList : Expression list) : Expression =
+let macroBetween _ (exprList : Expression list) : Expression =
     match exprList with
     | [ lower; upper; value ] ->
         let checkLowerBorder = List [ Symbol "ge"; value ; lower ]
@@ -13,7 +15,7 @@ let macroBetween (exprList : Expression list) : Expression =
         List [ Symbol "and" ; checkLowerBorder ; checkUpperBorder ]
     | _ -> raise <| InvalidLispExpressionException $"between expects exactly two argument"
 
-let macroInside (exprList : Expression list) : Expression =
+let macroInside _ (exprList : Expression list) : Expression =
     match exprList with
     | [ lower; upper; value ] ->
         let checkLowerBorder = List [ Symbol "gt"; value ; lower ]
