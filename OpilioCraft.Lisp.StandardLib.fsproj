@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <PackageId>OpilioCraft.Lisp.StandardLib</PackageId>
-    <Version>3.0.0</Version>
+    <Version>3.1.0</Version>
     <Authors>Carsten Schäfer</Authors>
     <Description>Standard function library for OpilioCraft.Lisp.</Description>
     <Copyright>Copyright (c) 2022 by Carsten Schäfer</Copyright>
@@ -18,7 +18,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="EvalHelper.fs" />
     <Compile Include="SpecialSymbols.fs" />
     <Compile Include="TypeConstructors.fs" />
     <Compile Include="UnaryFunctions.fs" />
@@ -29,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpilioCraft.Lisp" Version="3.0.2" />
+    <PackageReference Include="OpilioCraft.Lisp" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>

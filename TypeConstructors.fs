@@ -3,8 +3,6 @@
 open OpilioCraft.FSharp.Prelude
 open OpilioCraft.Lisp
 
-// Note: type constructors will later be augmented to evaluate incoming expression list first; no need to do it here
-
 // date/time related types
 let ctrDate _ exprList =
     match exprList with

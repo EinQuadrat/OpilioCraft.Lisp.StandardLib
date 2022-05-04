@@ -7,60 +7,62 @@ open StandardLib.BinaryFunctions
 open StandardLib.Functions
 open StandardLib.Macros
 
-open StandardLib.EvalHelper
+// NOTE: function names beginning with ':' are treated as special functions
 
 // function catalogue
-let unaryFunctions : Map<string, Environment -> Expression -> Expression> = 
+let unaryFunctions : Map<string, UnaryFunction> = 
     Map.ofArray
         [|
+            // quote
+            ":quote" , quote
+
             // boolean functions
-            "not", unaryNot
+            ":not" , unaryNot
 
             // datetime functions
-            "year", unaryYear
-            "month", unaryYear
-            "day", unaryYear
+            "year"  , unaryYear
+            "month" , unaryYear
+            "day"   , unaryYear
         |]
-    |> Map.map (fun _ body -> (fun env -> Evaluator.evalExpression env >> body env)) // unary function always have to eval their argument
 
-let binaryFunctions : Map<string, Environment -> Expression * Expression -> Expression> =
+let binaryFunctions : Map<string, BinaryFunction> =
     Map.ofArray
         [|
             // arithmetic
-            "+", binaryAdd
-            "-", binarySubtract
-            "*", binaryMultiply
-            "/", binaryDivide
+            "+" , binaryAdd
+            "-" , binarySubtract
+            "*" , binaryMultiply
+            "/" , binaryDivide
 
             // comparison
-            "eq", binaryEqual
-            "lt", binaryLower
-            "le", binaryLowerEqual
-            "gt", binaryGreater
-            "ge", binaryGreaterEqual
+            "eq" , binaryEqual
+            "lt" , binaryLower
+            "le" , binaryLowerEqual
+            "gt" , binaryGreater
+            "ge" , binaryGreaterEqual
 
             // matching
-            "contains", binaryContains
-            "matches",  binaryMatchesRegex
+            "contains" , binaryContains
+            "matches"  , binaryMatchesRegex
         |]
 
-let ordinaryFunctions : Map<string, Function> =
+let ordinaryFunctions : Map<string, OrdinaryFunction> =
     Map.ofArray
         [|
             // type constructors
-            "#date", fun env -> evalExpressionList env >> ctrDate env
-            "#time", fun env -> evalExpressionList env >> ctrTime env
-            "#datetime", fun env -> evalExpressionList env >> ctrDateTime env
+            "#date"     , ctrDate
+            "#time"     , ctrTime
+            "#datetime" , ctrDateTime
 
             // boolean functions
-            "and", funcAnd
-            "or", funcOr
+            ":and", funcAnd
+            ":or", funcOr
 
             // other functions
-            "cond", funcCond
+            ":cond", funcCond
 
             // macros
-            "neq", macroNotEqual
-            "between", macroBetween
-            "inside", macroInside
+            ":neq", macroNotEqual
+            ":between", macroBetween
+            ":inside", macroInside
         |]

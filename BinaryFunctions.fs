@@ -5,8 +5,6 @@ open System.Text.RegularExpressions
 open OpilioCraft.FSharp.Prelude
 open OpilioCraft.Lisp
 
-open EvalHelper
-
 // ------------------------------------------------------------------------------------------------
 // canonical comparisons
 
@@ -26,11 +24,11 @@ let rec private compareExpressions condition : (Expression * Expression -> bool)
     // default is false
     | _ -> false
 
-let binaryEqual env        = evalExpressionTupel env >> (compareExpressions (fun x -> x = 0))  >> LispBoolean
-let binaryLower env        = evalExpressionTupel env >> (compareExpressions (fun x -> x < 0))  >> LispBoolean
-let binaryLowerEqual env   = evalExpressionTupel env >> (compareExpressions (fun x -> x <= 0)) >> LispBoolean
-let binaryGreater env      = evalExpressionTupel env >> (compareExpressions (fun x -> x > 0))  >> LispBoolean
-let binaryGreaterEqual env = evalExpressionTupel env >> (compareExpressions (fun x -> x >= 0)) >> LispBoolean
+let binaryEqual _        = (compareExpressions (fun x -> x = 0))  >> LispBoolean
+let binaryLower _        = (compareExpressions (fun x -> x < 0))  >> LispBoolean
+let binaryLowerEqual _   = (compareExpressions (fun x -> x <= 0)) >> LispBoolean
+let binaryGreater _      = (compareExpressions (fun x -> x > 0))  >> LispBoolean
+let binaryGreaterEqual _ = (compareExpressions (fun x -> x >= 0)) >> LispBoolean
 
 // ------------------------------------------------------------------------------------------------
 // match-based comparisons
@@ -40,50 +38,42 @@ let private matchFunction funcName funcImpl : (Expression * Expression -> bool) 
     | _ , Atom (FlexibleValue.String pattern) -> false // other expressions than string atoms lead to false
     | _ -> raise <| InvalidLispExpressionException $"{funcName} expects a string pattern as second argument"
 
-let binaryContains env     = evalExpressionTupel env >> (matchFunction "contains" (fun value pattern -> value.Contains(pattern))) >> LispBoolean
-let binaryMatchesRegex env = evalExpressionTupel env >> (matchFunction "matches" (fun value pattern -> Regex.IsMatch(value, pattern))) >> LispBoolean
+let binaryContains _     = (matchFunction "contains" (fun value pattern -> value.Contains(pattern))) >> LispBoolean
+let binaryMatchesRegex _ = (matchFunction "matches" (fun value pattern -> Regex.IsMatch(value, pattern))) >> LispBoolean
 
 // ------------------------------------------------------------------------------------------------
 // arithmetic functions
 
-let binaryAdd env =
-    evalExpressionTupel env
-    >> function
-        | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Numeral b) -> (a + b) |> LispNumeral
-        | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Decimal b) -> (a + b) |> LispDecimal
-        | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Decimal b) -> ((decimal a) + b) |> LispDecimal
-        | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Numeral b) -> (a + (decimal b)) |> LispDecimal
-        | _ -> raise <| InvalidLispExpressionException $"'+' supports only numeral or decimal values"
+let binaryAdd _ = function
+    | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Numeral b) -> (a + b) |> LispNumeral
+    | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Decimal b) -> (a + b) |> LispDecimal
+    | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Decimal b) -> ((decimal a) + b) |> LispDecimal
+    | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Numeral b) -> (a + (decimal b)) |> LispDecimal
+    | _ -> raise <| InvalidLispExpressionException $"'+' supports only numeral or decimal values"
 
-let binarySubtract env =
-    evalExpressionTupel env
-    >> function
-        | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Numeral b) -> (a - b) |> LispNumeral
-        | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Decimal b) -> (a - b) |> LispDecimal
-        | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Decimal b) -> ((decimal a) - b) |> LispDecimal
-        | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Numeral b) -> (a - (decimal b)) |> LispDecimal
-        | _ -> raise <| InvalidLispExpressionException $"'-' supports only numeral or decimal values"
+let binarySubtract _ = function
+    | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Numeral b) -> (a - b) |> LispNumeral
+    | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Decimal b) -> (a - b) |> LispDecimal
+    | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Decimal b) -> ((decimal a) - b) |> LispDecimal
+    | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Numeral b) -> (a - (decimal b)) |> LispDecimal
+    | _ -> raise <| InvalidLispExpressionException $"'-' supports only numeral or decimal values"
 
-let binaryMultiply env =
-    evalExpressionTupel env
-    >> function
-        | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Numeral b) -> (a * b) |> LispNumeral
-        | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Decimal b) -> (a * b) |> LispDecimal
-        | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Decimal b) -> ((decimal a) * b) |> LispDecimal
-        | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Numeral b) -> (a * (decimal b)) |> LispDecimal
-        | _ -> raise <| InvalidLispExpressionException $"'*' supports only numeral or decimal values"
+let binaryMultiply _ = function
+    | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Numeral b) -> (a * b) |> LispNumeral
+    | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Decimal b) -> (a * b) |> LispDecimal
+    | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Decimal b) -> ((decimal a) * b) |> LispDecimal
+    | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Numeral b) -> (a * (decimal b)) |> LispDecimal
+    | _ -> raise <| InvalidLispExpressionException $"'*' supports only numeral or decimal values"
 
-let binaryDivide env =
-    evalExpressionTupel env 
-    >> function
-        | _, Atom (FlexibleValue.Numeral b) when b = 0 ->
-            raise <| InvalidLispExpressionException $"division by zero is not defined"
-        | _, Atom (FlexibleValue.Decimal b) when b = 0m ->
-            raise <| InvalidLispExpressionException $"division by zero is not defined"
+let binaryDivide _ = function
+    | _, Atom (FlexibleValue.Numeral b) when b = 0 ->
+        raise <| InvalidLispExpressionException $"division by zero is not defined"
+    | _, Atom (FlexibleValue.Decimal b) when b = 0m ->
+        raise <| InvalidLispExpressionException $"division by zero is not defined"
 
-        | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Numeral b) -> (a / b) |> LispNumeral
-        | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Decimal b) -> (a / b) |> LispDecimal
-        | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Decimal b) -> ((decimal a) / b) |> LispDecimal
-        | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Numeral b) -> (a / (decimal b)) |> LispDecimal
+    | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Numeral b) -> (a / b) |> LispNumeral
+    | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Decimal b) -> (a / b) |> LispDecimal
+    | Atom (FlexibleValue.Numeral a), Atom (FlexibleValue.Decimal b) -> ((decimal a) / b) |> LispDecimal
+    | Atom (FlexibleValue.Decimal a), Atom (FlexibleValue.Numeral b) -> (a / (decimal b)) |> LispDecimal
 
-        | _ -> raise <| InvalidLispExpressionException $"'/' supports only numeral or decimal values"
+    | _ -> raise <| InvalidLispExpressionException $"'/' supports only numeral or decimal values"

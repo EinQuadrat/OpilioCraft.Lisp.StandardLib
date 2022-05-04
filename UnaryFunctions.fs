@@ -3,7 +3,8 @@
 open OpilioCraft.Lisp
 open SpecialSymbols
 
-// Note: unary functions will later be augmented to evaluate incoming expression first; no need to do it here
+// special function quote
+let quote _ expr = expr
 
 // unary operators
 let unaryNot _ expr =

@@ -2,7 +2,6 @@
 
 open OpilioCraft.Lisp
 open SpecialSymbols
-open EvalHelper
 
 // (and expr1 ... exprN) := expr1 [ && ... && exprN ]
 let funcAnd env =
